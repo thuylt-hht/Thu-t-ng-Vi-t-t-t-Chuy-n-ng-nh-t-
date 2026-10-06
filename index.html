@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mô-đun 2: Tra cứu & Kiểm tra Thuật ngữ Viết tắt Ô tô</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .app-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 750px;
+            padding: 25px;
+        }
+        h1 {
+            color: #1a365d;
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+        p.subtitle {
+            text-align: center;
+            color: #718096;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        /* Navigation Tabs */
+        .tab-menu {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background-color: #edf2f7;
+            color: #4a5568;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+        .tab-btn.active {
+            background-color: #3182ce;
+            color: white;
+        }
+
+        /* Lookup Tab Styles */
+        .search-box {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 15px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th {
+            background-color: #ebf8ff;
+            color: #2b6cb0;
+        }
+        .acronym-badge {
+            background-color: #2b6cb0;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        /* Form & Quiz Styles */
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2d3748;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-primary:hover {
+            background-color: #2b6cb0;
+        }
+        .student-info-bar {
+            background-color: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #2b6cb0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .question-box {
+            font-size: 17px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option-btn {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            color: #2d3748;
+            font-size: 15px;
+            cursor: pointer;
+            text-align: left;
+        }
+        .option-btn.correct {
+            background-color: #c6f6d5;
+            border-color: #38a169;
+            color: #22543d;
+        }
+        .option-btn.incorrect {
+            background-color: #fed7d7;
+            border-color: #e53e3e;
+            color: #742a2a;
+        }
+        .result-box {
+            text-align: center;
+        }
+        .result-score {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2b6cb0;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <h1>Mô-đun 2: Thuật Ngữ Viết Tắt Chuyên Ngành Ô Tô</h1>
+    <p class="subtitle">Automotive Acronyms & Abbreviations - Unit 4 & Giáo trình</p>
+
+    <!-- Menu Chuyển Tab -->
+    <div class="tab-menu">
+        <button class="tab-btn active" id="tab-lookup-btn" onclick="switchTab('lookup')">🔍 Tra Cứu Thuật Ngữ</button>
+        <button class="tab-btn" id="tab-quiz-btn" onclick="switchTab('quiz')">📝 Kiểm Tra Trắc Nghiệm</button>
+    </div>
+
+    <!-- TAB 1: TRA CỨU THUẬT NGỮ -->
+    <div id="lookup-section">
+        <input type="text" id="search-input" class="search-box" placeholder="Nhập từ viết tắt hoặc nghĩa (VD: ABS, FWD, phanh...)" onkeyup="filterAcronyms()">
+        <table>
+            <thead>
+                <tr>
+                    <th>Từ viết tắt</th>
+                    <th>Tên đầy đủ (English)</th>
+                    <th>Giải nghĩa chi tiết (Tiếng Việt)</th>
+                </tr>
+            </thead>
+            <tbody id="acronym-table-body">
+                <!-- Dữ liệu được nạp tự động qua JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- TAB 2: KIỂM TRA TRẮC NGHIỆM -->
+    <div id="quiz-section" style="display: none;">
+        <!-- Màn hình Đăng nhập -->
+        <div id="quiz-welcome">
+            <div class="input-group">
+                <label for="student-name">Họ và tên sinh viên:</label>
+                <input type="text" id="student-name" placeholder="Ví dụ: Nguyễn Văn A">
+            </div>
+            <div class="input-group">
+                <label for="student-class">Lớp / Mã sinh viên:</label>
+                <input type="text" id="student-class" placeholder="Ví dụ: CĐ Ô tô 15A">
+            </div>
+            <button class="btn-primary" onclick="startQuiz()">Bắt đầu làm bài kiểm tra ➔</button>
+        </div>
+
+        <!-- Màn hình Làm bài -->
+        <div id="quiz-play" style="display: none;">
+            <div class="student-info-bar">
+                <span id="display-name"></span>
+                <span id="display-class"></span>
+            </div>
+            <div style="font-weight: bold; color: #718096; margin-bottom: 10px;" id="quiz-progress">Câu hỏi 1/12</div>
+            <div class="question-box" id="quiz-question"></div>
+            <div class="options-container" id="quiz-options"></div>
+            <button class="btn-primary" id="next-btn" style="display:none; margin-top:15px;" onclick="nextQuestion()">Câu tiếp theo ➔</button>
+        </div>
+
+        <!-- Màn hình Kết quả -->
+        <div id="quiz-result" class="result-box" style="display: none;">
+            <h2>KẾT QUẢ BÀI KIỂM TRA</h2>
+            <div class="student-info-bar" style="justify-content: center; gap: 20px;">
+                <span id="result-name"></span>
+                <span id="result-class"></span>
+            </div>
+            <p>Điểm số đạt được:</p>
+            <div class="result-score" id="result-score">0 / 12</div>
+            <button class="btn-primary" onclick="restartQuiz()">Làm lại bài test</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu thuật ngữ
+    const acronymData = [
+        { code: "FWD", full: "Front-Wheel Drive", mean: "Hệ thống dẫn động cầu trước" },
+        { code: "RWD", full: "Rear Wheel Drive", mean: "Hệ thống dẫn động cầu sau" },
+        { code: "BHP", full: "Brake Horse Power", mean: "Công suất mã lực phanh (sức ngựa)" },
+        { code: "MPG", full: "Miles Per Gallon", mean: "Mức tiêu thụ nhiên liệu (dặm/galông xăng)" },
+        { code: "MPH", full: "Miles Per Hour", mean: "Tốc độ di chuyển (dặm trên giờ)" },
+        { code: "RPM", full: "Revolutions Per Minute", mean: "Tốc độ vòng tua động cơ (vòng/phút)" },
+        { code: "GDI", full: "Gasoline Direct Injection", mean: "Hệ thống phun xăng trực tiếp" },
+        { code: "TDI", full: "Turbocharged Direct Injection", mean: "Hệ thống phun nhiên liệu diesel turbo trực tiếp" },
+        { code: "ABS", full: "Anti-lock Braking System", mean: "Hệ thống phanh chống bó cứng" },
+        { code: "ESP", full: "Electronic Stability Programme", mean: "Hệ thống cân bằng xe tự động điện tử" },
+        { code: "PAS", full: "Power Assisted Steering", mean: "Hệ thống trợ lực lái" },
+        { code: "CATS", full: "Computer Active Technology Suspension", mean: "Hệ thống treo điện tử tự động điều chỉnh độ cứng" }
+    ];
+
+    // Nạp dữ liệu vào bảng Tra cứu
+    function renderTable() {
+        const tbody = document.getElementById("acronym-table-body");
+        tbody.innerHTML = "";
+        acronymData.forEach(item => {
+            const row = `<tr>
+                <td><span class="acronym-badge">${item.code}</span></td>
+                <td><strong>${item.full}</strong></td>
+                <td>${item.mean}</td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+    }
+
+    // Lọc tìm kiếm
+    function filterAcronyms() {
+        const query = document.getElementById("search-input").value.toLowerCase();
+        const rows = document.querySelectorAll("#acronym-table-body tr");
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            row.style.display = text.includes(query) ? "" : "none";
+        });
+    }
+
+    // Chuyển Tab
+    function switchTab(tab) {
+        if (tab === 'lookup') {
+            document.getElementById("lookup-section").style.display = "block";
+            document.getElementById("quiz-section").style.display = "none";
+            document.getElementById("tab-lookup-btn").classList.add("active");
+            document.getElementById("tab-quiz-btn").classList.remove("active");
+        } else {
+            document.getElementById("lookup-section").style.display = "none";
+            document.getElementById("quiz-section").style.display = "block";
+            document.getElementById("tab-quiz-btn").classList.add("active");
+            document.getElementById("tab-lookup-btn").classList.remove("active");
+        }
+    }
+
+    // XỬ LÝ TRẮC NGHIỆM
+    const quizQuestions = [
+        { q: "Thuật ngữ viết tắt 'FWD' có nghĩa là gì?", options: ["Dẫn động 4 bánh", "Dẫn động cầu trước", "Dẫn động cầu sau", "Hệ thống phanh trước"], answer: 1 },
+        { q: "'ABS' đại diện cho hệ thống an toàn nào trên ô tô?", options: ["Anti-lock Braking System", "Automatic Brake Control", "Active Body Suspension", "Airbag System"], answer: 0 },
+        { q: "Chỉ số 'MPG' dùng để đo lường yếu tố nào?", options: ["Tốc độ tối đa", "Mức tiêu thụ nhiên liệu", "Công suất động cơ", "Áp suất lốp xe"], answer: 1 },
+        { q: "Động cơ phun xăng trực tiếp được viết tắt là gì?", options: ["TDI", "MPI", "GDI", "EFI"], answer: 2 },
+        { q: "Ký hiệu 'RPM' trên bảng đồng hồ có nghĩa là gì?", options: ["Tốc độ xe (km/h)", "Áp suất dầu động cơ", "Số vòng quay động cơ/phút", "Nhiệt độ nước làm mát"], answer: 2 },
+        { q: "'ESP' là viết tắt của hệ thống nào?", options: ["Electronic Stability Programme", "Engine Speed Power", "Electric Steering Part", "Emergency Stop Pedal"], answer: 0 },
+        { q: "Từ viết tắt 'RWD' chỉ kiểu dẫn động nào?", options: ["Dẫn động cầu trước", "Dẫn động cầu sau", "Dẫn động 4 bánh toàn thời gian", "Trợ lực lái"], answer: 1 },
+        { q: "'PAS' (Power Assisted Steering) là tên gọi tiếng Anh của:", options: ["Hệ thống phanh tay", "Hệ thống trợ lực lái", "Hệ thống treo khí nén", "Hộp số tự động"], answer: 1 },
+        { q: "Thuật ngữ 'BHP' được dùng để đo thông số nào của xe?", options: ["Dung tích xi-lanh", "Mô-men xoắn", "Công suất mã lực", "Trọng lượng xe"], answer: 2 },
+        { q: "'CATS' trong hệ thống gầm ô tô có nghĩa là gì?", options: ["Bộ lọc khí xả", "Hệ thống treo điện tử tự động", "Cảm biến vị trí bướm ga", "Đèn pha thông minh"], answer: 1 },
+        { q: "Động cơ Diesel phun nhiên liệu trực tiếp có trang bị Turbo viết tắt là:", options: ["GDI", "TDI", "FWD", "ESP"], answer: 1 },
+        { q: "'MPH' là đơn vị đo thông số nào?", options: ["Quãng đường", "Tốc độ (Dặm/giờ)", "Thể tích bình xăng", "Mã lực phanh"], answer: 1 }
+    ];
+
+    let currentQ = 0;
+    let score = 0;
+    let selected = false;
+    let studentName = "", studentClass = "";
+
+    function startQuiz() {
+        studentName = document.getElementById("student-name").value.trim();
+        studentClass = document.getElementById("student-class").value.trim();
+
+        if (!studentName || !studentClass) {
+            alert("Vui lòng điền đầy đủ Họ tên và Lớp!");
+            return;
+        }
+
+        document.getElementById("display-name").innerText = "Sinh viên: " + studentName;
+        document.getElementById("display-class").innerText = "Lớp: " + studentClass;
+
+        document.getElementById("quiz-welcome").style.display = "none";
+        document.getElementById("quiz-play").style.display = "block";
+
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        selected = false;
+        const item = quizQuestions[currentQ];
+        document.getElementById("quiz-progress").innerText = `Câu hỏi ${currentQ + 1} / ${quizQuestions.length}`;
+        document.getElementById("quiz-question").innerText = item.q;
+
+        const optionsBox = document.getElementById("quiz-options");
+        optionsBox.innerHTML = "";
+        document.getElementById("next-btn").style.display = "none";
+
+        item.options.forEach((opt, idx) => {
+            const btn = document.createElement("button");
+            btn.className = "option-btn";
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(idx, item.answer, btn);
+            optionsBox.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(chosen, correct, btn) {
+        if (selected) return;
+        selected = true;
+
+        const allBtns = document.querySelectorAll("#quiz-options .option-btn");
+        if (chosen === correct) {
+            btn.classList.add("correct");
+            score++;
+        } else {
+            btn.classList.add("incorrect");
+            allBtns[correct].classList.add("correct");
+        }
+        document.getElementById("next-btn").style.display = "block";
+    }
+
+    function nextQuestion() {
+        currentQ++;
+        if (currentQ < quizQuestions.length) {
+            loadQuestion();
+        } else {
+            document.getElementById("quiz-play").style.display = "none";
+            document.getElementById("quiz-result").style.display = "block";
+            document.getElementById("result-name").innerText = "Sinh viên: " + studentName;
+            document.getElementById("result-class").innerText = "Lớp: " + studentClass;
+            document.getElementById("result-score").innerText = `${score} / ${quizQuestions.length}`;
+        }
+    }
+
+    function restartQuiz() {
+        currentQ = 0;
+        score = 0;
+        document.getElementById("quiz-welcome").style.display = "block";
+        document.getElementById("quiz-result").style.display = "none";
+        document.getElementById("student-name").value = "";
+        document.getElementById("student-class").value = "";
+    }
+
+    // Khởi tạo bảng ban đầu
+    renderTable();
+</script>
+
+</body>
+</html>
